@@ -2,38 +2,53 @@
 
 import requests
 
-def get_business_mappings(token, env):
+from shuler.auth import FrontdoorClient
+import requests
+import logging
+
+logger = logging.getLogger(__name__)
+
+def get_business_mappings(client: FrontdoorClient):
     """
-    Fetches all business mappings from the Cloudability API, using Frontdoor authentication.
+    Fetches all business mappings using the authenticated FrontdoorClient.
 
     Args:
-        token (str): The Frontdoor token retrieved via frontdoor_auth().
-        env (str): The environment ID (apptio-current-environment).
+        client (FrontdoorClient): An authenticated FrontdoorClient instance.
 
     Returns:
         list: A list of business mapping dictionaries.
 
     Raises:
-        Exception: If the API call fails or returns an error.
+        Exception: If the request fails or if authentication is missing.
     """
+    if not client.token or not client.environment_id:
+        raise Exception("Client is not authenticated. Please call client.authenticate() first.")
+
     url = "https://api.cloudability.com/v3/business-mappings"
     headers = {
-        "apptio-opentoken": token,
-        "apptio-current-environment": env,
+        "apptio-opentoken": client.token,
+        "apptio-current-environment": client.environment_id,
         "Accept": "application/json"
     }
 
+    logger.info("Fetching business mappings...")
+
     try:
         response = requests.get(url, headers=headers)
-        response.raise_for_status()  # Raises HTTPError if the response was unsuccessful
-        business_mappings = response.json()
-        return business_mappings
+        response.raise_for_status()
+        data = response.json()
+        logger.info("Successfully retrieved business mappings.")
+        return data
     except requests.exceptions.HTTPError as http_err:
-        raise Exception(f"HTTP error occurred: {http_err} - Response: {response.text}")
+        logger.error(f"HTTP error while fetching business mappings: {http_err} - Response: {response.text}")
+        raise
     except requests.exceptions.RequestException as req_err:
-        raise Exception(f"Request error occurred: {req_err}")
+        logger.error(f"Request error while fetching business mappings: {req_err}")
+        raise
     except Exception as err:
-        raise Exception(f"An unexpected error occurred: {err}")
+        logger.error(f"Unexpected error while fetching business mappings: {err}")
+        raise
+
 
 def get_business_mapping_index(token):
     """
