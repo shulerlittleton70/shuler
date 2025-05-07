@@ -1,1 +1,1 @@
-from .business_mappings import get_business_mappings
+from .business_mappings import get_business_mappings, get_business_mapping_index

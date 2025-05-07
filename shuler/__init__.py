@@ -1,1 +1,1 @@
-from .auth import frontdoor_auth
+from .auth import FrontdoorClient

@@ -50,17 +50,55 @@ def get_business_mappings(client: FrontdoorClient):
         raise
 
 
-def get_business_mapping_index(token):
+def get_business_mapping_index(client: FrontdoorClient):
     """
-    Retrieve all business mappings but only return their names and indexes.
+    Calls the Cloudability business mappings endpoint and:
+    1️⃣ Prints a readable summary of all business mappings (excluding 'statements').
+    2️⃣ Returns a list of cleaned mappings (dicts) for future programmatic use.
 
-    Args:
-        token (str): Bearer token for authentication.
-
-    Returns:
-        list of dict: Each dict contains 'name' and 'index' of a business mapping.
+    Each returned dict includes:
+    - name
+    - index
+    - kind
+    - defaultValue
+    - numberFormat
+    - updatedAt
     """
-    pass
+    response = client.session.get(f"{client.base_url}/v3/business-mappings")
+    response.raise_for_status()
+
+    data = response.json()
+    mappings = data.get('result', [])
+
+    if not mappings:
+        print("No business mappings found.")
+        return []
+
+    cleaned_mappings = []
+
+    print("\nBusiness Mapping Index Summary:\n")
+    for mapping in mappings:
+        summary = {
+            'name': mapping.get('name'),
+            'index': mapping.get('index'),
+            'kind': mapping.get('kind'),
+            'defaultValue': mapping.get('defaultValue'),
+            'numberFormat': mapping.get('numberFormat'),
+            'updatedAt': mapping.get('updatedAt')
+        }
+        cleaned_mappings.append(summary)
+
+        # Print each mapping in a clean format
+        print(f"Name        : {summary['name']}")
+        print(f"Index       : {summary['index']}")
+        print(f"Kind        : {summary['kind']}")
+        print(f"DefaultVal  : {summary['defaultValue']}")
+        print(f"NumberFormat: {summary['numberFormat']}")
+        print(f"UpdatedAt   : {summary['updatedAt']}")
+        print("-" * 40)
+
+    return cleaned_mappings
+
 
 
 def get_business_mapping(token, index):
