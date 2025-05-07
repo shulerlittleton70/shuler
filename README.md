@@ -27,29 +27,6 @@ The shuler library is a lightweight, modular Python toolkit designed to simplify
 	•	Studio Helpers:
 	•	Data management (scaffolded for future expansion)
 
-📂 Current File Structure
-
-shuler/
-├── shuler/
-│   ├── __init__.py
-│   ├── auth.py
-│   ├── cldy/
-│   │   ├── __init__.py
-│   │   ├── cost_reports.py
-│   │   └── business_mappings.py
-│   └── studio/
-│       ├── __init__.py
-│       └── data.py
-├── tests/
-│   ├── __init__.py
-│   ├── cldy/
-│   │   ├── test_cost_reports.py
-│   │   └── test_business_mappings.py
-│   └── studio/
-│       └── test_data.py
-├── pyproject.toml
-├── README.md
-├── LICENSE
 
 🚀 Quick Start Example
 

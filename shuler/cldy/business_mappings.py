@@ -1,17 +1,39 @@
 # shuler/cldy/business_mappings.py
 
-def get_business_mappings(token):
+import requests
+
+def get_business_mappings(token, env):
     """
-    Retrieve all business mappings.
+    Fetches all business mappings from the Cloudability API, using Frontdoor authentication.
 
     Args:
-        token (str): Bearer token for authentication.
+        token (str): The Frontdoor token retrieved via frontdoor_auth().
+        env (str): The environment ID (apptio-current-environment).
 
     Returns:
-        dict: Full list of business mappings.
-    """
-    pass
+        list: A list of business mapping dictionaries.
 
+    Raises:
+        Exception: If the API call fails or returns an error.
+    """
+    url = "https://api.cloudability.com/v3/business-mappings"
+    headers = {
+        "apptio-opentoken": token,
+        "apptio-current-environment": env,
+        "Accept": "application/json"
+    }
+
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Raises HTTPError if the response was unsuccessful
+        business_mappings = response.json()
+        return business_mappings
+    except requests.exceptions.HTTPError as http_err:
+        raise Exception(f"HTTP error occurred: {http_err} - Response: {response.text}")
+    except requests.exceptions.RequestException as req_err:
+        raise Exception(f"Request error occurred: {req_err}")
+    except Exception as err:
+        raise Exception(f"An unexpected error occurred: {err}")
 
 def get_business_mapping_index(token):
     """
